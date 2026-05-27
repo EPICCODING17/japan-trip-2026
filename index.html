@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Japan Trip Todo - LINE LIFF</title>
+  <style>
+    :root{
+      --line:#06C755;
+      --bg:#f4f7f5;
+      --card:#ffffff;
+      --text:#17212b;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --blue:#2f80ed;
+      --orange:#f2994a;
+      --purple:#9b51e0;
+      --shadow:0 12px 28px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;
+      background:linear-gradient(180deg,#e9fff0 0%,var(--bg) 36%,#eef3f7 100%);
+      color:var(--text);
+    }
+    .app{
+      max-width:520px;
+      margin:0 auto;
+      min-height:100vh;
+      padding:18px 14px 92px;
+    }
+    .hero{
+      background:linear-gradient(135deg,var(--line),#00a86b);
+      border-radius:28px;
+      padding:22px 18px;
+      color:white;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      width:190px;height:190px;
+      right:-70px;top:-65px;
+      background:rgba(255,255,255,.18);
+      border-radius:50%;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.2);
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+    }
+    h1{
+      margin:16px 0 6px;
+      font-size:28px;
+      line-height:1.15;
+      letter-spacing:-.4px;
+    }
+    .hero p{margin:0;color:rgba(255,255,255,.9);font-size:14px}
+    .userbar{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:14px;
+      padding:10px;
+      border-radius:18px;
+      background:rgba(255,255,255,.18);
+      backdrop-filter:blur(8px);
+      position:relative;
+      z-index:1;
+    }
+    .avatar{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:rgba(255,255,255,.25);
+      object-fit:cover;
+      flex:0 0 auto;
+    }
+    .userbar b{
+      display:block;
+      font-size:14px;
+      line-height:1.25;
+    }
+    .sync-status{
+      display:block;
+      margin-top:2px;
+      color:rgba(255,255,255,.82);
+      font-size:12px;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin:14px 0;
+    }
+    .stat{
+      background:rgba(255,255,255,.23);
+      border-radius:18px;
+      padding:11px;
+      backdrop-filter:blur(8px);
+    }
+    .stat b{display:block;font-size:20px}
+    .stat span{font-size:12px;color:rgba(255,255,255,.85)}
+    .toolbar{
+      display:flex;
+      gap:8px;
+      margin:16px 0 12px;
+      overflow:auto;
+      padding-bottom:3px;
+    }
+    .chip{
+      border:1px solid var(--border);
+      background:white;
+      color:var(--text);
+      border-radius:999px;
+      padding:9px 13px;
+      font-weight:750;
+      white-space:nowrap;
+      cursor:pointer;
+      box-shadow:0 5px 12px rgba(0,0,0,.04);
+    }
+    .chip.active{background:var(--text);color:white;border-color:var(--text)}
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      margin:18px 2px 10px;
+    }
+    .section-title h2{margin:0;font-size:18px}
+    .section-title span{font-size:12px;color:var(--muted)}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(229,231,235,.8);
+      border-radius:22px;
+      padding:13px;
+      margin:10px 0;
+      box-shadow:0 8px 18px rgba(0,0,0,.045);
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .time{
+      min-width:68px;
+      text-align:center;
+      background:#f3f6f7;
+      border-radius:16px;
+      padding:9px 7px;
+      font-weight:850;
+      font-size:13px;
+      color:#111827;
+    }
+    .time small{display:block;color:var(--muted);font-size:11px;margin-top:2px;font-weight:650}
+    .content{flex:1;min-width:0}
+    .title{
+      font-weight:850;
+      font-size:15px;
+      line-height:1.35;
+      margin:2px 0 5px;
+    }
+    .detail{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      margin:0 0 9px;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:11px;
+      font-weight:800;
+      background:#eef7ff;
+      color:#1d66c2;
+    }
+    .tag.move{background:#fff4e8;color:#b75b00}
+    .tag.meet{background:#f4ecff;color:#6f2dbd}
+    .tag.food{background:#fff0f0;color:#c0392b}
+    .tag.free{background:#effaf3;color:#14833b}
+    input[type="checkbox"]{
+      appearance:none;
+      width:28px;height:28px;
+      border-radius:50%;
+      border:2px solid #cfd8dc;
+      margin:2px 0 0;
+      display:grid;
+      place-content:center;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    input[type="checkbox"]:checked{
+      background:var(--line);
+      border-color:var(--line);
+    }
+    input[type="checkbox"]:checked:before{
+      content:"✓";
+      color:white;
+      font-weight:900;
+      font-size:18px;
+      transform:translateY(-1px);
+    }
+    .card.done{
+      opacity:.62;
+    }
+    .card.done .title{text-decoration:line-through}
+    .bottom{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(12px);
+      border-top:1px solid var(--border);
+      padding:12px 14px;
+    }
+    .bottom-inner{
+      max-width:520px;
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+    }
+    button{
+      border:0;
+      border-radius:17px;
+      padding:13px 14px;
+      font-weight:900;
+      cursor:pointer;
+      font-size:14px;
+    }
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .primary{background:var(--line);color:white;flex:1}
+    .secondary{background:#eef2f5;color:#111827}
+    .progress{
+      height:9px;
+      background:rgba(255,255,255,.35);
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:14px;
+    }
+    .bar{height:100%;width:0%;background:white;border-radius:999px;transition:.25s}
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      background:white;
+      border-radius:22px;
+      padding:28px 18px;
+      border:1px dashed #cfd8dc;
+      margin-top:14px;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="badge">LINE TODO LIST · JAPAN TRIP</div>
+      <h1>ตารางงานญี่ปุ่น<br>27–29 พฤษภาคม</h1>
+      <div class="userbar">
+        <img class="avatar" id="profileImage" alt="" />
+        <div>
+          <b id="profileName">LINE LIFF demo</b>
+          <span class="sync-status" id="syncStatus">กำลังเตรียมระบบ...</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="totalCount">0</b><span>รายการทั้งหมด</span></div>
+        <div class="stat"><b id="doneCount">0</b><span>เสร็จแล้ว</span></div>
+        <div class="stat"><b id="leftCount">0</b><span>คงเหลือ</span></div>
+      </div>
+      <div class="progress"><div class="bar" id="progressBar"></div></div>
+    </section>
+
+    <div class="toolbar">
+      <button class="chip active" data-filter="all">ทั้งหมด</button>
+      <button class="chip" data-filter="Thu">28 พ.ค.</button>
+      <button class="chip" data-filter="Fri">29 พ.ค.</button>
+      <button class="chip" data-filter="move">เดินทาง</button>
+      <button class="chip" data-filter="meet">ประชุม</button>
+      <button class="chip" data-filter="food">อาหาร</button>
+    </div>
+
+    <div id="list"></div>
+  </main>
+
+  <div class="bottom">
+    <div class="bottom-inner">
+      <button class="secondary" id="resetButton" onclick="resetAll()">รีเซ็ต</button>
+      <button class="primary" onclick="shareLine()">แชร์ใน LINE</button>
+    </div>
+  </div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+const CONFIG = {
+  // ใส่ LIFF ID จาก LINE Developers เช่น "1234567890-AbCdEfGh"
+  liffId: "YOUR_LIFF_ID",
+
+  // ใส่ Web App URL จาก Google Apps Script ถ้าต้องการบันทึกลง Google Sheet
+  // Sheet ID ที่เตรียมไว้: 1IMfv-j08A_SF2DuDSX3j3Zp9dcyTtb0wtFOsgCEv9Wc
+  // ตัวอย่าง: "https://script.google.com/macros/s/AKfycb.../exec"
+  sheetWebAppUrl: "https://script.google.com/macros/s/AKfycbzXlLSjuBwOZjHKD6M02r6rcivx84SucKc7nChZA6SCP8sceN8NKQgrmsVXIF6eI9Dt/exec"
+};
+
+const tasks = [
+  {id:"t1", day:"Wed", date:"พุธ 27 พ.ค.", time:"ทั้งวัน", end:"", type:"move", title:"เดินทาง กรุงเทพฯ → สนามบินฮาเนดะ", detail:"เช็กอินที่ Prince Hotel"},
+  {id:"t2", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"06:45", end:"09:30", type:"move", title:"เดินทางไปโตเกียว / ชินโยโกฮามะ", detail:"พบที่ล็อบบี้ 4 ชั้น 1 โรงแรม Shin-Yokohama Prince Hotel"},
+  {id:"t3", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"07:06", end:"07:24", type:"move", title:"JR Shinkansen Kodama No. 902", detail:"Shin-Yokohama → Tokyo"},
+  {id:"t4", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"07:49", end:"08:28", type:"move", title:"JR Shinkansen Yamabiko No. 125", detail:"Tokyo → Utsunomiya"},
+  {id:"t5", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"08:54", end:"09:00", type:"move", title:"JR Shonan-Shinjuku Line", detail:"Utsunomiya → Suzumenomiya"},
+  {id:"t6", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"10:00", end:"", type:"move", title:"พบที่ UTPC / Transfer", detail:"เดินทางจากโรงแรมไป UTPC"},
+  {id:"t7", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"10:30", end:"11:30", type:"meet", title:"ทัวร์กระบวนการผลิต DS-5000 และ FT-2500", detail:"Group OSTH และรอบร่วมกับ Nichizu"},
+  {id:"t8", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"12:00", end:"13:00", type:"food", title:"อาหารกลางวัน", detail:"Lunch"},
+  {id:"t9", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"13:00", end:"14:30", type:"meet", title:"ทัวร์พื้นที่", detail:"Area Tour"},
+  {id:"t10", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"14:30", end:"16:00", type:"meet", title:"ประชุม Kumakuro กับ Nichizu", detail:"หัวข้อ: วัสดุ และทัวร์พื้นที่จัดจำหน่าย"},
+  {id:"t11", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"16:30", end:"18:30", type:"move", title:"ออกเดินทาง / Transfer", detail:"ไปทัวร์สำนักงานใหญ่ หรือโรงแรม"},
+  {id:"t12", day:"Thu", date:"พฤหัส 28 พ.ค.", time:"19:00", end:"", type:"move", title:"กลับโรงแรม Shin Yokohama Prince Hotel", detail:"Return to hotel"},
+  {id:"t13", day:"Fri", date:"ศุกร์ 29 พ.ค.", time:"08:30", end:"", type:"move", title:"ถึงห้องบอลรูม InterContinental Hotel", detail:"Minato-Mirai"},
+  {id:"t14", day:"Fri", date:"ศุกร์ 29 พ.ค.", time:"10:30", end:"11:00", type:"meet", title:"ประชุมกับ Mitsui", detail:"Meeting with Mitsui"},
+  {id:"t15", day:"Fri", date:"ศุกร์ 29 พ.ค.", time:"12:00", end:"13:00", type:"food", title:"อาหารกลางวันกับ Sato san", detail:"Lunch with Sato san"},
+  {id:"t16", day:"Fri", date:"ศุกร์ 29 พ.ค.", time:"13:30", end:"14:00", type:"meet", title:"ทัวร์สำนักงานใหญ่", detail:"Headquarters Tour"},
+  {id:"t17", day:"Fri", date:"ศุกร์ 29 พ.ค.", time:"14:00", end:"14:30", type:"meet", title:"ประชุมกับ Kubo san", detail:"Isuzu LC-8300A solution"},
+  {id:"t18", day:"Fri", date:"ศุกร์ 29 พ.ค.", time:"14:30", end:"", type:"free", title:"เวลาว่าง / Automotive Engineering Exposition", detail:"กรุณาเยี่ยมชมงาน Automotive Engineering Exposition"}
+];
+
+const tagName = {move:"เดินทาง", meet:"ประชุม/ทัวร์", food:"อาหาร", free:"เวลาว่าง"};
+let filter = "all";
+let profile = null;
+let doneCache = readLocalDone();
+let syncing = false;
+let saveTimer = null;
+
+function readLocalDone(){
+  try{
+    return JSON.parse(localStorage.getItem("jpTripTodoDone") || "{}");
+  }catch{
+    return {};
+  }
+}
+
+function saved(){
+  return doneCache;
+}
+function saveLocal(done){
+  localStorage.setItem("jpTripTodoDone", JSON.stringify(done));
+}
+function saveDone(done, options = {}){
+  doneCache = done;
+  saveLocal(done);
+  if(options.remote !== false) scheduleSheetSave();
+}
+
+function hasLiffId(){
+  return CONFIG.liffId && CONFIG.liffId !== "YOUR_LIFF_ID";
+}
+function hasSheet(){
+  return CONFIG.sheetWebAppUrl && CONFIG.sheetWebAppUrl.startsWith("https://");
+}
+function currentUserId(){
+  return profile?.userId || "local-demo-user";
+}
+function setSyncStatus(text){
+  document.getElementById("syncStatus").textContent = text;
+}
+function setResetBusy(isBusy){
+  const btn = document.getElementById("resetButton");
+  btn.disabled = isBusy;
+}
+function renderProfile(){
+  const name = profile?.displayName || "Japan Trip 2026";
+  const image = profile?.pictureUrl || "";
+  document.getElementById("profileName").textContent = name;
+  const img = document.getElementById("profileImage");
+  if(image){
+    img.src = image;
+    img.style.display = "block";
+  }else{
+    img.removeAttribute("src");
+    img.style.display = "none";
+  }
+}
+function sheetRequest(params){
+  if(!hasSheet()) return Promise.resolve(null);
+  return new Promise((resolve, reject) => {
+    const callbackName = "sheetCallback_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    const url = new URL(CONFIG.sheetWebAppUrl);
+    Object.entries({...params, callback: callbackName}).forEach(([key, value]) => {
+      url.searchParams.set(key, String(value ?? ""));
+    });
+
+    const script = document.createElement("script");
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+    window[callbackName] = data => {
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("ไม่สามารถเชื่อม Google Sheet ได้"));
+    };
+    script.src = url.toString();
+    script.async = true;
+    document.body.appendChild(script);
+  });
+}
+function scheduleSheetSave(){
+  if(!hasSheet()) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveToSheet, 450);
+}
+async function saveToSheet(){
+  if(!hasSheet() || syncing) return;
+  syncing = true;
+  setSyncStatus("กำลังซิงก์ Google Sheet...");
+  try{
+    await sheetRequest({
+      action: "save",
+      userId: currentUserId(),
+      displayName: profile?.displayName || "Local demo",
+      done: JSON.stringify(doneCache),
+      updatedAt: new Date().toISOString()
+    });
+    setSyncStatus("ซิงก์กับ Google Sheet แล้ว");
+  }catch(error){
+    setSyncStatus("ซิงก์ไม่สำเร็จ แต่บันทึกไว้ในเครื่องแล้ว");
+  }finally{
+    syncing = false;
+  }
+}
+async function loadFromSheet(){
+  if(!hasSheet()) return;
+  setSyncStatus("กำลังโหลดสถานะจาก Google Sheet...");
+  try{
+    const result = await sheetRequest({
+      action: "get",
+      userId: currentUserId()
+    });
+    if(result?.done){
+      doneCache = result.done;
+      saveLocal(doneCache);
+      render();
+    }
+    setSyncStatus("พร้อมใช้งาน · Google Sheet");
+  }catch(error){
+    setSyncStatus("พร้อมใช้งาน · บันทึกในเครื่อง");
+  }
+}
+
+function render(){
+  const done = saved();
+  const filtered = tasks.filter(t => filter==="all" || t.day===filter || t.type===filter);
+  const byDate = {};
+  filtered.forEach(t => (byDate[t.date] ||= []).push(t));
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty">ไม่พบรายการในหมวดนี้</div>';
+  }
+  Object.keys(byDate).forEach(date => {
+    const group = byDate[date];
+    const completed = group.filter(t => done[t.id]).length;
+    const header = document.createElement("div");
+    header.className = "section-title";
+    header.innerHTML = `<h2>${date}</h2><span>${completed}/${group.length} เสร็จแล้ว</span>`;
+    list.appendChild(header);
+
+    group.forEach(t => {
+      const card = document.createElement("article");
+      card.className = "card" + (done[t.id] ? " done" : "");
+      card.innerHTML = `
+        <input type="checkbox" ${done[t.id] ? "checked" : ""} aria-label="done">
+        <div class="time">${t.time}<small>${t.end ? "ถึง " + t.end : ""}</small></div>
+        <div class="content">
+          <div class="title">${t.title}</div>
+          <p class="detail">${t.detail}</p>
+          <span class="tag ${t.type}">${tagName[t.type]}</span>
+        </div>`;
+      card.querySelector("input").addEventListener("change", e => {
+        const d = saved();
+        d[t.id] = e.target.checked;
+        saveDone(d);
+        render();
+      });
+      list.appendChild(card);
+    });
+  });
+
+  const total = tasks.length;
+  const doneCount = tasks.filter(t => done[t.id]).length;
+  document.getElementById("totalCount").textContent = total;
+  document.getElementById("doneCount").textContent = doneCount;
+  document.getElementById("leftCount").textContent = total - doneCount;
+  document.getElementById("progressBar").style.width = Math.round(doneCount/total*100) + "%";
+}
+
+document.querySelectorAll(".chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    filter = btn.dataset.filter;
+    render();
+  });
+});
+
+function resetAll(){
+  if(confirm("ต้องการรีเซ็ตรายการทั้งหมดใช่ไหม?")){
+    saveDone({}, {remote:false});
+    render();
+    resetSheet();
+  }
+}
+async function resetSheet(){
+  if(!hasSheet()) return;
+  setResetBusy(true);
+  setSyncStatus("กำลังรีเซ็ตข้อมูลใน Google Sheet...");
+  try{
+    await sheetRequest({
+      action: "save",
+      userId: currentUserId(),
+      displayName: profile?.displayName || "Local demo",
+      done: "{}",
+      updatedAt: new Date().toISOString()
+    });
+    setSyncStatus("รีเซ็ตและซิงก์แล้ว");
+  }catch(error){
+    setSyncStatus("รีเซ็ตในเครื่องแล้ว แต่ซิงก์ Sheet ไม่สำเร็จ");
+  }finally{
+    setResetBusy(false);
+  }
+}
+
+function shareLine(){
+  const done = saved();
+  const doneCount = tasks.filter(t => done[t.id]).length;
+  const text = `Japan Trip Todo\nเสร็จแล้ว ${doneCount}/${tasks.length} รายการ\nคงเหลือ ${tasks.length - doneCount} รายการ`;
+  if(window.liff && hasLiffId() && liff.isInClient()){
+    liff.shareTargetPicker([{type:"text", text}]);
+  }else{
+    navigator.clipboard?.writeText(text);
+    alert("คัดลอกข้อความสำหรับแชร์ใน LINE แล้ว");
+  }
+}
+
+async function initLiff(){
+  renderProfile();
+  if(!hasLiffId()){
+    setSyncStatus(hasSheet() ? "พร้อมใช้งาน · Google Sheet" : "พร้อมใช้งาน");
+    return;
+  }
+  if(!window.liff){
+    setSyncStatus("โหลด LIFF SDK ไม่สำเร็จ");
+    return;
+  }
+
+  try{
+    await liff.init({ liffId: CONFIG.liffId });
+    if(!liff.isLoggedIn()){
+      liff.login();
+      return;
+    }
+    profile = await liff.getProfile();
+    renderProfile();
+    setSyncStatus(hasSheet() ? "เข้าสู่ระบบ LINE แล้ว · กำลังเชื่อม Sheet" : "เข้าสู่ระบบ LINE แล้ว · บันทึกในเครื่อง");
+  }catch(error){
+    setSyncStatus("พร้อมใช้งาน");
+  }
+}
+
+async function boot(){
+  render();
+  await initLiff();
+  await loadFromSheet();
+  render();
+}
+
+boot();
+
+/*
+Google Apps Script สำหรับ Sheet database
+1) เปิดไฟล์ /Users/epiccoding/Downloads/line_todo_japan_trip_apps_script.gs
+2) วางโค้ดทั้งหมดใน Apps Script ของ Google Sheet ID: 1IMfv-j08A_SF2DuDSX3j3Zp9dcyTtb0wtFOsgCEv9Wc
+3) Deploy > New deployment > Web app
+3) Execute as: Me, Who has access: Anyone
+4) คัดลอก Web app URL มาใส่ CONFIG.sheetWebAppUrl ด้านบน
+*/
+</script>
+</body>
+</html>
